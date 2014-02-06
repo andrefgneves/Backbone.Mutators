@@ -104,12 +104,12 @@ IN THE SOFTWARE.*/
 
         // check if we have a getter mutation
         if (isMutator === true && _.isFunction(this.mutators[attr]) === true) {
-            return this.mutators[attr].call(this);
+            return this.mutators[attr].call(this, oldGet.call(this, attr));
         }
 
         // check if we have a deeper nested getter mutation
         if (isMutator === true && _.isObject(this.mutators[attr]) === true && _.isFunction(this.mutators[attr].get) === true) {
-            return this.mutators[attr].get.call(this);
+            return this.mutators[attr].get.call(this, oldGet.call(this, attr));
         }
 
         return oldGet.call(this, attr);
@@ -182,10 +182,10 @@ IN THE SOFTWARE.*/
                 isSaving = _.has(options || {}, 'emulateHTTP');
                 isTransient = this.mutators[name].transient;
                 if (!isSaving || !isTransient) {
-                  attr[name] = _.bind(this.mutators[name].get, this)();
-                } 
+                  attr[name] = _.bind(this.mutators[name].get, this)(oldGet.call(this, name));
+                }
             } else {
-                attr[name] = _.bind(this.mutators[name], this)();
+                attr[name] = _.bind(this.mutators[name], this)(oldGet.call(this, name));
             }
         }, this));
 
